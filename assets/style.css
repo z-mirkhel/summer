@@ -1,0 +1,61 @@
+body {
+  background-image: url(./img.jpg);
+}
+.upp {
+  background-color: rgba(250, 235, 241, 0.865);
+  border-radius: 10px/20px;
+  border: 8px outset rgba(217, 2, 131, 0.527);
+  color:rgba(78, 13, 52, 0.779);
+}
+h3, h1 {
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  color:rgba(78, 13, 52, 0.779);
+}
+#col1 {
+  background-color: rgba(250, 235, 241, 0.865);
+  border: 5px outset rgba(217, 2, 131, 0.527);
+  border-radius: 20px;
+}
+#col2 {
+  background-color: rgba(250, 235, 241, 0.865);
+  border: 5px outset rgba(7, 99, 184, 0.527);
+  border-radius: 20px;
+}
+#btn {
+  background-color: rgb(231, 239, 246);
+  border: 2px inset rgb(43, 134, 214);
+  color:rgb(43, 134, 214);
+}
+#btn:hover {
+  background-color: rgba(7, 99, 184, 0.527);
+  border: 2px inset rgb(43, 134, 214);
+  color:rgb(231, 239, 246);
+}
+#name, #message {
+  border: 2px inset rgb(43, 134, 214)
+}
+#all_mess {
+  overflow: auto;
+  width:600px;
+  height:300px;
+}
+#all_mess:empty::before {
+  content: 'Нет сообщений';
+  display: block;
+  padding: 20px;
+  font-size: 20px;
+  padding-left: 10%;
+  color: rgba(78, 13, 52, 0.779);
+}
+#all_mess::-webkit-scrollbar {
+  width: 10px;
+}
+#all_mess::-webkit-scrollbar-track {
+  box-shadow: 5px 5px 5px -5px rgba(34, 60, 80, 0.2) inset;
+  background-color: rgba(250, 235, 241, 0.865);
+  border-radius: 10px;
+}
+#all_mess::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(217, 2, 131, 0.527), rgba(78, 13, 52, 0.779));
+}

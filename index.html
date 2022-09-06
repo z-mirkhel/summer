@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<!-- Подключение Bootstrap  -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+  <!--иконка сайта-->
+  <link rel="shortcut icon" href="https://i.pinimg.com/originals/da/b2/cd/dab2cd2a2c02d0d5b078cca53207a09b.jpg" type="image/x-icon">
+  <title>
+      Летняя практика
+  </title>
+	<!-- Свои стили -->
+	<style>
+    body {
+      background-image: url(./img.jpg);
+    }
+    .upp {
+      background-color: rgba(250, 235, 241, 0.865);
+      border-radius: 10px/20px;
+      border: 8px outset rgba(217, 2, 131, 0.527);
+      color:rgba(78, 13, 52, 0.779);
+    }
+    h3, h1 {
+      font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+      color:rgba(78, 13, 52, 0.779);
+    }
+    #col1 {
+      background-color: rgba(250, 235, 241, 0.865);
+      border: 5px outset rgba(217, 2, 131, 0.527);
+      border-radius: 20px;
+    }
+    #col2 {
+      background-color: rgba(250, 235, 241, 0.865);
+      border: 5px outset rgba(7, 99, 184, 0.527);
+      border-radius: 20px;
+    }
+    #btn {
+      background-color: rgb(231, 239, 246);
+      border: 2px inset rgb(43, 134, 214);
+      color:rgb(43, 134, 214);
+    }
+    #btn:hover {
+      background-color: rgba(7, 99, 184, 0.527);
+      border: 2px inset rgb(43, 134, 214);
+      color:rgb(231, 239, 246);
+    }
+    #name, #message {
+      border: 2px inset rgb(43, 134, 214)
+    }
+    #all_mess {
+      overflow: auto;
+      width:600px;
+      height:300px;
+    }
+    #all_mess:empty::before {
+      content: 'Нет сообщений';
+      display: block;
+      padding: 20px;
+      font-size: 20px;
+      padding-left: 10%;
+      color: rgba(78, 13, 52, 0.779);
+    }
+    #all_mess::-webkit-scrollbar {
+      width: 10px;
+    }
+    #all_mess::-webkit-scrollbar-track {
+      box-shadow: 5px 5px 5px -5px rgba(34, 60, 80, 0.2) inset;
+      background-color: rgba(250, 235, 241, 0.865);
+      border-radius: 10px;
+    }
+    #all_mess::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background: linear-gradient(180deg, rgba(217, 2, 131, 0.527), rgba(78, 13, 52, 0.779));
+    }
+	</style>
+</head>
+<body>
+	<!-- Основная часть страницы -->
+  <div class="container">
+    <div class="py-5 text-center">
+            <div class="upp">
+      <h1>Чат программа</h1>
+      <p class="lead">Укажите ваше имя и начинайте переписку</p>
+    </div>
+        </div>
+    <div class="row text-center ">
+      <div class="col-5" id="col1">
+        <!-- Форма для получения сообщений и имени -->
+        <h3>Форма сообщений</h3>
+        <form id="messForm">
+          <input type="text" name="name" id="name" placeholder="Введите имя" class="form-control">
+          <br>
+          <textarea name="message" id="message" class="form-control" placeholder="Введите сообщение"></textarea>
+          <br>
+          <input type="submit" value="Отправить" class="btn btn-danger" id="btn">
+        </form>
+      </div>
+      <div class="col-7" id="col2">
+        <h3 style="color: rgba(7, 99, 184, 0.527);">Сообщения</h3>
+        <!-- Вывод всех сообщений будет здесь -->
+        <div id="all_mess"></div>
+      </div>
+    </div>
+  </div>
+	<!-- Подключаем jQuery, а также Socket.io -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+		// У каждого пользователя будет случайный стиль для блока с сообщенями,
+		// поэтому в этом кусочке кода мы получаем случайные числа
+		var min = 1;
+		var max = 6;
+		var random = Math.floor(Math.random() * (max - min)) + min;
+
+		// Устаналиваем класс в переменную в зависимости от случайного числа
+		// Эти классы взяты из Bootstrap стилей
+		var alertClass;
+		switch (random) {
+			case 1:
+				alertClass = 'secondary';
+				break;
+			case 2:
+				alertClass = 'danger';
+				break;
+			case 3:
+				alertClass = 'success';
+				break;
+			case 4:
+				alertClass = 'warning';
+				break;
+			case 5:
+				alertClass = 'info';
+				break;
+			case 6:
+				alertClass = 'light';
+				break;
+		}
+
+		// Функция для работы с данными на сайте
+		$(function() {
+			// Включаем socket.io и отслеживаем все подключения
+			var socket = io.connect();
+			// Делаем переменные на:
+			var $form = $("#messForm"); // Форму сообщений
+			var $name = $("#name"); // Поле с именем
+			var $textarea = $("#message"); // Текстовое поле
+			var $all_messages = $("#all_mess"); // Блок с сообщениями
+
+			// Отслеживаем нажатие на кнопку в форме сообщений
+			$form.submit(function(event) {
+				// Предотвращаем классическое поведение формы
+				event.preventDefault();
+				//Проверка, чтобы поле с сообщением не было пустым
+				if ($name.val() && $textarea.val()){
+				// В сокет отсылаем новое событие 'send mess',
+				// в событие передаем различные параметры и данные
+				socket.emit('send mess', {mess: $textarea.val(), name: $name.val(), className: alertClass});
+				// Очищаем поле с сообщением
+				$textarea.val('');
+			  }
+				else if ($name.val()){
+					alert("Введите сообщение!");
+				}
+				else {
+					alert("Введите имя!");
+				}
+			});
+
+			// Здесь отслеживаем событие 'add mess',
+			// которое должно приходить из сокета в случае добавления нового сообщения
+			socket.on('add mess', function(data) {
+				// Встраиваем полученное сообщение в блок с сообщениями
+				// У блока с сообщением будет тот класс, который соответвует пользователю что его отправил
+				$all_messages.append("<div class='alert alert-" + data.className + "'><b>" + data.name + "</b>: " + data.mess + "</div>");
+			});
+
+		});
+	</script>
+</body>
+</html>
